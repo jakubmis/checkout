@@ -6,14 +6,12 @@ import lombok.Setter;
 import javax.validation.constraints.NotNull;
 
 /**
- * Created by jakub.mis on 7/20/2017.
+ * Created by Mis on 2017-07-22.
  */
 @Getter
 @Setter
-public class AddItemCommand {
+public class LoginCommand {
 
     @NotNull
     private String name;
-    @NotNull
-    private Integer amount;
 }

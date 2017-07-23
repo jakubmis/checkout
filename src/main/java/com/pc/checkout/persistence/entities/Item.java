@@ -1,21 +1,34 @@
 package com.pc.checkout.persistence.entities;
 
 import lombok.Data;
-import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.persistence.Id;
+import javax.persistence.*;
 
 /**
  * Created by jakub.mis on 7/20/2017.
  */
+@Entity
 @Data
-@Document(collection = "Item")
+@Table(name = "ITEM")
 public class Item {
 
     @Id
-    public String id;
+    @GeneratedValue
+    @Column(name = "ID")
+    private Long id;
+    @Column(name = "NAME", nullable = false, length = 100)
+    private String name;
+    @Column(name = "PRICE", nullable = false)
+    private Integer price;
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "ITEM_ID")
+    private ItemPromotion promotion;
 
-    public Price price;
+    public Item() {
+    }
 
-    public ItemName itemName;
+    public Item(int price, String name) {
+        this.price = price;
+        this.name = name;
+    }
 }
