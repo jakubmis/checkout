@@ -5,6 +5,7 @@ import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
 
+
 /**
  * Created by Mis on 2017-07-22.
  */
@@ -12,6 +13,6 @@ import javax.validation.constraints.NotNull;
 @Setter
 public class LoginCommand {
 
-    @NotNull
+    @NotNull(message = "Name cannot be blank")
     private String name;
 }

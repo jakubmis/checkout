@@ -17,6 +17,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.util.stream.Stream;
+
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -31,11 +33,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @ContextConfiguration(classes = Main.class)
 public class CheckoutControllerTest {
 
-    final private static String RECEIPT_HEADER = "Receipt\n------------\n";
-    final private static String RECEIPT_FOOTER = "------------\n" + "Price: 440\n" + "Rebate granted: 50\n" + "Total price: 390";
-    final private static String RECEIPT_CONTENT_APPLE = "|Product: APPLE|Amount: 10|Price: 50|AmountOfPromotion: 2|Promotion: 30|Total: 20\n";
-    final private static String RECEIPT_CONTENT_BANANA = "|Product: BANANA|Amount: 10|Price: 20|AmountOfPromotion: 0|Promotion: 0|Total: 20\n";
-    final private static String RECEIPT_CONTENT_CHERRY = "|Product: CHERRY|Amount: 10|Price: 1000|AmountOfPromotion: 5|Promotion: 600|Total: 400";
+    final private static String RECEIPT_HEADER = "Receipt";
+    final private static String RECEIPT_PRICE = "Price: ";
+    final private static String RECEIPT_REBATE = "Rebate granted: ";
+    final private static String RECEIPT_TOTAL_PRICE = "Total price: ";
+    final private static String RECEIPT_CONTENT_APPLE = "|Product: APPLE|Amount: 10|";
+    final private static String RECEIPT_CONTENT_BANANA = "|Product: BANANA|Amount: 10|";
+    final private static String RECEIPT_CONTENT_CHERRY = "|Product: CHERRY|Amount: 10|";
 
 
     @Autowired
@@ -44,6 +48,7 @@ public class CheckoutControllerTest {
     private CheckoutController checkoutController;
     @Autowired
     private AuthenticationController authenticationController;
+    private Stream<String> tags;
     private MockMvc mockMvc;
     private String token;
     private ObjectMapper mapper = new ObjectMapper();
@@ -54,7 +59,9 @@ public class CheckoutControllerTest {
                 .standaloneSetup(checkoutController)
                 .build();
         generateToken();
-
+        tags = Stream.of(RECEIPT_HEADER, RECEIPT_CONTENT_APPLE,
+                RECEIPT_CONTENT_BANANA, RECEIPT_CONTENT_CHERRY,
+                RECEIPT_PRICE, RECEIPT_REBATE, RECEIPT_TOTAL_PRICE);
     }
 
     @Test
@@ -81,11 +88,7 @@ public class CheckoutControllerTest {
         String receipt = mvcResult.getResponse().getContentAsString();
 
         assertNotNull(receipt);
-        assertTrue(receipt.contains(RECEIPT_HEADER));
-        assertTrue(receipt.contains(RECEIPT_FOOTER));
-        assertTrue(receipt.contains(RECEIPT_CONTENT_APPLE));
-        assertTrue(receipt.contains(RECEIPT_CONTENT_BANANA));
-        assertTrue(receipt.contains(RECEIPT_CONTENT_CHERRY));
+        tags.forEach(tag -> assertTrue(receipt.contains(tag)));
     }
 
     @Test
@@ -99,11 +102,8 @@ public class CheckoutControllerTest {
 
 
         assertNotNull(receipt);
-        assertTrue(receipt.contains(RECEIPT_HEADER));
-        assertTrue(receipt.contains(RECEIPT_FOOTER));
-        assertTrue(receipt.contains(RECEIPT_CONTENT_APPLE));
-        assertTrue(receipt.contains(RECEIPT_CONTENT_BANANA));
-        assertTrue(receipt.contains(RECEIPT_CONTENT_CHERRY));
+        tags.forEach(tag -> assertTrue(receipt.contains(tag)));
+
     }
 
     private void generateToken() throws Exception {

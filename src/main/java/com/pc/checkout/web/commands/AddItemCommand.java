@@ -12,8 +12,8 @@ import javax.validation.constraints.NotNull;
 @Setter
 public class AddItemCommand {
 
-    @NotNull
+    @NotNull(message = "Name cannot be null")
     private String name;
-    @NotNull
+    @NotNull(message = "Amount cannot be null")
     private Integer amount;
 }
