@@ -3,6 +3,7 @@ package com.pc.checkout.web.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.pc.checkout.domain.ICheckoutDomain;
+import com.pc.checkout.utils.Receipt;
 import com.pc.checkout.utils.Response;
 import com.pc.checkout.utils.Token;
 import com.pc.checkout.web.commands.AddItemCommand;
@@ -49,13 +50,13 @@ public class CheckoutController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "item/scan")
-    public String scan(@RequestHeader("Authorization") final String auth) {
-        return iCheckoutDomain.scanBasket(new Token(auth)).print();
+    public Receipt scan(@RequestHeader("Authorization") final String auth) {
+        return iCheckoutDomain.scanBasket(new Token(auth));
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "item/pay")
-    public String pay(@RequestHeader("Authorization") final String auth) {
-        String receipt = iCheckoutDomain.scanBasket(new Token(auth)).print();
+    public Receipt pay(@RequestHeader("Authorization") final String auth) {
+        Receipt receipt = iCheckoutDomain.scanBasket(new Token(auth));
         iCheckoutDomain.clearBasket(new Token(auth));
         return receipt;
     }

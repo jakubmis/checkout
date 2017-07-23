@@ -53,7 +53,8 @@ public class CheckoutDomain implements ICheckoutDomain {
     public Receipt scanBasket(Token token) {
         Basket basket = getBasket(token);
         Integer grantedRebate = calculateRebate(basket);
-        return new Receipt(basket.printContent(), basket.scanPrice(), grantedRebate);
+        return new Receipt(basket.getProducts(), basket.scanPrice(),
+                grantedRebate, (basket.scanPrice() - grantedRebate));
     }
 
     @Override

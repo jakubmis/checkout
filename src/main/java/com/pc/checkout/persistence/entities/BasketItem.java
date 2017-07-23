@@ -1,5 +1,6 @@
 package com.pc.checkout.persistence.entities;
 
+import com.pc.checkout.utils.Product;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -40,13 +41,9 @@ public class BasketItem {
         return item.getName();
     }
 
-    public String print() {
-        return "|Product: " + item.getName() +
-                "|Amount: " + amount +
-                "|Price: " + countPriceWithoutPromotion() +
-                "|AmountOfPromotion: " + amountOfPromotionGranted() +
-                "|Promotion: " + (countPriceWithoutPromotion() - countPrice()) +
-                "|Total: " + countPrice();
+    public Product toProduct() {
+        return new Product(item.getName(), amount, countPriceWithoutPromotion(),
+                amountOfPromotionGranted(), (countPriceWithoutPromotion() - countPrice()), countPrice());
     }
 
     public Integer countPrice() {

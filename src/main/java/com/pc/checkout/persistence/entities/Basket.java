@@ -1,9 +1,11 @@
 package com.pc.checkout.persistence.entities;
 
+import com.pc.checkout.utils.Product;
 import lombok.Data;
 
 import javax.persistence.*;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -44,10 +46,10 @@ public class Basket {
         }
     }
 
-    public String printContent() {
+    public List<Product> getProducts() {
         return content.stream()
-                .map(BasketItem::print)
-                .collect(Collectors.joining("\n"));
+                .map(BasketItem::toProduct)
+                .collect(Collectors.toList());
     }
 
     public Integer scanPrice() {

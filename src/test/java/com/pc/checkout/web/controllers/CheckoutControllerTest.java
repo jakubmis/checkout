@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.pc.checkout.Main;
 import com.pc.checkout.domain.CheckoutDomain;
+import com.pc.checkout.utils.Receipt;
 import com.pc.checkout.utils.Token;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,7 +18,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.stream.Stream;
+import java.io.IOException;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -33,22 +34,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @ContextConfiguration(classes = Main.class)
 public class CheckoutControllerTest {
 
-    final private static String RECEIPT_HEADER = "Receipt";
-    final private static String RECEIPT_PRICE = "Price: ";
-    final private static String RECEIPT_REBATE = "Rebate granted: ";
-    final private static String RECEIPT_TOTAL_PRICE = "Total price: ";
-    final private static String RECEIPT_CONTENT_APPLE = "|Product: APPLE|Amount: 10|";
-    final private static String RECEIPT_CONTENT_BANANA = "|Product: BANANA|Amount: 10|";
-    final private static String RECEIPT_CONTENT_CHERRY = "|Product: CHERRY|Amount: 10|";
-
-
     @Autowired
     private ConfigurableApplicationContext context;
     @Autowired
     private CheckoutController checkoutController;
     @Autowired
     private AuthenticationController authenticationController;
-    private Stream<String> tags;
     private MockMvc mockMvc;
     private String token;
     private ObjectMapper mapper = new ObjectMapper();
@@ -59,9 +50,6 @@ public class CheckoutControllerTest {
                 .standaloneSetup(checkoutController)
                 .build();
         generateToken();
-        tags = Stream.of(RECEIPT_HEADER, RECEIPT_CONTENT_APPLE,
-                RECEIPT_CONTENT_BANANA, RECEIPT_CONTENT_CHERRY,
-                RECEIPT_PRICE, RECEIPT_REBATE, RECEIPT_TOTAL_PRICE);
     }
 
     @Test
@@ -85,25 +73,45 @@ public class CheckoutControllerTest {
                 .perform(get("/checkout/item/scan")
                         .header("Authorization", token))
                 .andReturn();
-        String receipt = mvcResult.getResponse().getContentAsString();
-
-        assertNotNull(receipt);
-        tags.forEach(tag -> assertTrue(receipt.contains(tag)));
+        validateReceipt(mvcResult);
     }
 
     @Test
     public void testPay() throws Exception {
         generateBasket();
-        MvcResult mvcResult = mockMvc
+        MvcResult payResult = mockMvc
                 .perform(post("/checkout/item/pay")
                         .header("Authorization", token))
                 .andReturn();
-        String receipt = mvcResult.getResponse().getContentAsString();
+        validateReceipt(payResult);
 
+        MvcResult scanResult = mockMvc
+                .perform(get("/checkout/item/scan")
+                        .header("Authorization", token))
+                .andReturn();
+        validateReceiptIsEmpty(scanResult);
+    }
+
+    private void validateReceipt(MvcResult mvcResult) throws IOException {
+        String json = mvcResult.getResponse().getContentAsString();
+        final Receipt receipt = mapper.readValue(json, Receipt.class);
 
         assertNotNull(receipt);
-        tags.forEach(tag -> assertTrue(receipt.contains(tag)));
+        receipt.getContent().forEach(product -> {
+            assertNotNull(product.getPriceWithoutPromotion());
+            assertNotNull(product.getFinalPrice());
+            assertNotNull(product.getAmount());
+            assertNotNull(product.getPromotionRefund());
+            assertNotNull(product.getNumberOfGrantedPromotions());
+            assertNotNull(product.getName());
+        });
+    }
 
+    private void validateReceiptIsEmpty(MvcResult mvcResult) throws IOException {
+        String json = mvcResult.getResponse().getContentAsString();
+        final Receipt receipt = mapper.readValue(json, Receipt.class);
+        assertNotNull(receipt);
+        assertTrue(receipt.getContent().isEmpty());
     }
 
     private void generateToken() throws Exception {

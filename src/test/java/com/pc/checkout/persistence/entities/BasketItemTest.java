@@ -1,22 +1,18 @@
 package com.pc.checkout.persistence.entities;
 
 
+import com.pc.checkout.utils.Product;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Created by Mis on 2017-07-23.
  */
 public class BasketItemTest {
 
-    private static final String PRODUCT_TAG = "|Product: ";
-    private static final String AMOUNT_TAG = "|Amount: ";
-    private static final String PRICE_TAG = "|Price: ";
-    private static final String AMOUNT_OF_PROMOTION_TAG = "|AmountOfPromotion: ";
-    private static final String PROMOTION_TAG = "|Promotion: ";
-    private static final String TOTAL_TAG = "|Total: ";
     private static final Integer PROMOTION_PRICE = 10;
     private static final Integer PROMOTION_AMOUNT = 5;
     private BasketItem basketItem;
@@ -34,18 +30,18 @@ public class BasketItemTest {
     }
 
     @Test
-    public void testPrint() throws Exception {
+    public void testToProduct() throws Exception {
         preparePromotionBasketItem("A", 6, 5);
 
-        String print = basketItem.print();
+        Product product = basketItem.toProduct();
 
-        assertNotNull(print);
-        assertTrue(print.contains(PRODUCT_TAG + basketItem.getName()));
-        assertTrue(print.contains(AMOUNT_TAG + basketItem.getAmount()));
-        assertTrue(print.contains(PRICE_TAG + 30));
-        assertTrue(print.contains(AMOUNT_OF_PROMOTION_TAG + 1));
-        assertTrue(print.contains(PROMOTION_TAG + 15));
-        assertTrue(print.contains(TOTAL_TAG + 15));
+        assertNotNull(product);
+        assertEquals(product.getName(), basketItem.getName());
+        assertEquals(product.getAmount(), basketItem.getAmount());
+        assertEquals(product.getPriceWithoutPromotion(), new Integer(30));
+        assertEquals(product.getNumberOfGrantedPromotions(), new Integer(1));
+        assertEquals(product.getPromotionRefund(), new Integer(15));
+        assertEquals(product.getFinalPrice(), new Integer(15));
 
     }
 
@@ -71,15 +67,15 @@ public class BasketItemTest {
     public void testPrintWithoutPromotion() throws Exception {
         prepareBasketItem("A", 5, 6);
 
-        String print = basketItem.print();
+        Product product = basketItem.toProduct();
 
-        assertNotNull(print);
-        assertTrue(print.contains(PRODUCT_TAG + basketItem.getName()));
-        assertTrue(print.contains(AMOUNT_TAG + basketItem.getAmount()));
-        assertTrue(print.contains(PRICE_TAG + 30));
-        assertTrue(print.contains(AMOUNT_OF_PROMOTION_TAG + 0));
-        assertTrue(print.contains(PROMOTION_TAG + 0));
-        assertTrue(print.contains(TOTAL_TAG + 30));
+        assertNotNull(product);
+        assertEquals(product.getName(), basketItem.getName());
+        assertEquals(product.getAmount(), basketItem.getAmount());
+        assertEquals(product.getPriceWithoutPromotion(), new Integer(30));
+        assertEquals(product.getNumberOfGrantedPromotions(), new Integer(0));
+        assertEquals(product.getPromotionRefund(), new Integer(0));
+        assertEquals(product.getFinalPrice(), new Integer(30));
 
     }
 

@@ -76,7 +76,7 @@ public class CheckoutDomainTest {
         Set<Long> itemIds = new HashSet<>();
         itemIds.add(1L);
         final Integer REBATE = 100;
-        Receipt expected = new Receipt(customer.getBasket().printContent(), customer.getBasket().scanPrice(), REBATE);
+        Receipt expected = new Receipt(customer.getBasket().getProducts(), customer.getBasket().scanPrice(), REBATE, customer.getBasket().scanPrice() - REBATE);
         when(rebateRepository.calculateHighestRebate(eq(itemIds))).thenReturn(Optional.of(REBATE));
         return expected;
     }

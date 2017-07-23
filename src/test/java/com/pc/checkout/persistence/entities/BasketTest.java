@@ -1,10 +1,12 @@
 package com.pc.checkout.persistence.entities;
 
+import com.pc.checkout.utils.Product;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -59,9 +61,9 @@ public class BasketTest {
         BasketItem basketItem2 = new BasketItem(prepareItem("B"), 2);
         prepareBasket(basketItem, basketItem2);
 
-        String actual = basket.printContent();
-        String expected = Stream.of(basketItem2.print(), basketItem.print())
-                .collect(Collectors.joining("\n"));
+        List<Product> actual = basket.getProducts();
+        List<Product> expected = Stream.of(basketItem2.toProduct(), basketItem.toProduct())
+                .collect(Collectors.toList());
 
         assertEquals(actual, expected);
     }
