@@ -15,7 +15,7 @@ public class Rebate {
 
     @Id
     @GeneratedValue
-    @Column(name = "ID", nullable = false)
+    @Column(name = "ID")
     private Long id;
 
     @Column(name = "REBATE", nullable = false)
