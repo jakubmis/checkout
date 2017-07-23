@@ -69,7 +69,7 @@ public class CheckoutDomain implements ICheckoutDomain {
                 .map(BasketItem::getItem)
                 .map(Item::getId)
                 .collect(Collectors.toSet());
-        return rebateRepository.calculateHighestRebate(collect, collect.size())
+        return rebateRepository.calculateHighestRebate(collect)
                 .orElse(0);
     }
 
