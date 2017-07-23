@@ -16,9 +16,9 @@ public class ItemPromotion {
     @GeneratedValue
     @Column(name = "ID")
     private Long id;
-    @Column(name = "AMOUNT")
+    @Column(name = "AMOUNT", nullable = false)
     private Integer amount;
-    @Column(name = "SPECIAL_PRICE")
+    @Column(name = "SPECIAL_PRICE", nullable = false)
     private Integer specialPrice;
 
     public ItemPromotion() {

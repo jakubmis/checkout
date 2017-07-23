@@ -15,10 +15,10 @@ public class Rebate {
 
     @Id
     @GeneratedValue
-    @Column(name = "ID")
+    @Column(name = "ID", nullable = false)
     private Long id;
 
-    @Column(name = "REBATE")
+    @Column(name = "REBATE", nullable = false)
     private Integer rebate;
 
     @ManyToMany

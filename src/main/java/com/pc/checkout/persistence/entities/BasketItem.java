@@ -17,7 +17,7 @@ public class BasketItem {
     @Column(name = "ID")
     private Long id;
 
-    @Column(name = "AMOUNT")
+    @Column(name = "AMOUNT", nullable = false)
     private Integer amount;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
